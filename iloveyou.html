@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tớ yêu T... H.. rơi, xoay khi chạm</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: linear-gradient(to bottom, #ffdde1, #ee9ca7);
+    height: 100vh;
+    position: relative;
+    font-family: sans-serif;
+  }
+  .falling {
+    position: absolute;
+    animation: fall linear;
+    pointer-events: auto; /* để có thể bấm */
+    user-select: none;
+    cursor: pointer;
+    transform-origin: center center;
+    transition: transform 1s ease;
+  }
+  @keyframes fall {
+    0% {
+      transform: translateY(-50px);
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100vh);
+      opacity: 0;
+    }
+  }
+  .explode {
+    animation: explode 0.5s ease-out forwards;
+  }
+  @keyframes explode {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(3);
+      opacity: 0;
+    }
+  }
+  .rotate360 {
+    transform: rotate(360deg);
+  }
+  audio {
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<audio id="bg-music" autoplay loop>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
+  Trình duyệt không hỗ trợ audio.
+</audio>
+
+<script>
+  function createHeartOrText() {
+    const el = document.createElement('div');
+    el.className = 'falling';
+    el.style.left = Math.random() * window.innerWidth + 'px';
+    el.style.fontSize = (Math.random() * 20 + 20) + 'px';
+    el.style.top = '-40px';
+    el.style.animationDuration = (Math.random() * 2 + 3) + 's';
+
+    if (Math.random() < 0.7) {
+      el.textContent = '❤️';
+    } else {
+      el.textContent = 'Tớ yêu T... H..';
+      el.style.color = '#fff';
+      el.style.fontWeight = 'bold';
+      el.style.textShadow = '0 0 5px #ff5c5c';
+    }
+
+    // Khi bấm vào thì xoay 360 độ 1 lần rồi về vị trí cũ
+    el.addEventListener('click', () => {
+      if (el.classList.contains('rotate360')) return; // tránh bấm liên tục
+      el.classList.add('rotate360');
+      setTimeout(() => {
+        el.classList.remove('rotate360');
+      }, 1000); // 1s tương ứng với transition
+    });
+
+    document.body.appendChild(el);
+
+    el.addEventListener('animationend', () => {
+      el.classList.add('explode');
+      setTimeout(() => el.remove(), 500);
+    });
+  }
+
+  // Tạo 6 phần tử mỗi 300ms để rơi nhiều hơn
+  setInterval(() => {
+    for(let i = 0; i < 6; i++) {
+      createHeartOrText();
+    }
+  }, 300);
+
+  // Tự động phát nhạc khi người dùng tương tác lần đầu
+  document.body.addEventListener('click', () => {
+    const music = document.getElementById('bg-music');
+    if (music.paused) music.play();
+  }, { once: true });
+</script>
+
+</body>
+</html>
